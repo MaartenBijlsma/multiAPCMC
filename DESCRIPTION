@@ -1,0 +1,16 @@
+Package: multiAPCMC
+Type: Package
+Title: Fit multiple age-period-cohort multiple classification (APCMC) models with different specifications for the purpose of forecasting
+Version: 0.1.0
+Authors@R: c(
+    person("Maarten Jacob", "Bijlsma", role=c("aut", "cre"), email=  "maarten.bijlsma@gmail.com")
+    )
+Maintainer: Maarten J. Bijlsma <maarten.bijlsma@gmail.com>
+Description: This package allows the user to fit multiple age-period-cohort multiple classification (APCMC), each with a different specification (log link, power5 link, which cohort and period constraints, how many years of training data, etc.). These models can then be tested for the purpose of forecasting by using leave-future-out validation.
+Depends: R (>= 4.2.0)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+Imports: 
+    MASS
