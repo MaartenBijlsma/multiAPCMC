@@ -4,6 +4,9 @@
 # multiAPCMC
 
 <!-- badges: start -->
+
+[![Travis build
+status](https://travis-ci.com/MaartenBijlsma/multiAPCMC.svg?branch=main)](https://travis-ci.com/MaartenBijlsma/multiAPCMC)
 <!-- badges: end -->
 
 multiAPCMC is a package that allows the user to fit multiple

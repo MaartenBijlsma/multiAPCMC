@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # multiAPCMC
 
 <!-- badges: start -->
+[![Travis build status](https://travis-ci.com/MaartenBijlsma/multiAPCMC.svg?branch=main)](https://travis-ci.com/MaartenBijlsma/multiAPCMC)
 <!-- badges: end -->
 
 multiAPCMC is a package that allows the user to fit multiple age-period-cohort multiple classification (MultiAPCMC) models and test them against a 'leave-future-out' set. In short, the package helps you investigate a large range of possible APC model specifications and helps you determine which is the best one for forecasting the future. 
