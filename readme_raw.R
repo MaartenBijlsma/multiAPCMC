@@ -51,13 +51,15 @@ multiAPCMC.example.data$cases[multiAPCMC.example.data$Age==6]
 multiAPCMC.example.data$cases[multiAPCMC.example.data$Age==8]
 multiAPCMC.example.data$cases[multiAPCMC.example.data$Age==20]
 multiAPCMC.example.data$cases[multiAPCMC.example.data$Age==30]
-# probably it is already fine at age 10, but let's say
-# then that becomes the age at which we start estimation (we don't have to
+# probably it is already fine at really young ages because there
+# are hardly any 0s. But let's say that we see that we don't get
+# structural 0s anymore at e.g. age 20.
+# Then that becomes the age at which we start estimation (we don't have to
 # throw out younger ages; the package still uses information from younger ages.
 # Namely: it takes the mean over those ages and projects it forward).
 # we set this age as our startestage
 startestage <- 30
-# note that this is the 11th age group (since 0 is the first, i.e. 1).
+# note that this is the 30th age group (since 0 is the first, i.e. 1).
 # So if we have 5-year age by 5-year period
 # categories, '11' would refer to age category '50-55' and '1' would refer to
 # category '0 to 4'. Be mindful of this.
@@ -217,10 +219,10 @@ plot(years,inctot,type='l', lwd=2)
 inctot.mod <- multiAPCMC.predsummary(years,rank1mod)
 lines(years,inctot.mod$pred, col='red', lwd=2)
 
-# We see that our model fits really well for the fitted period
+# We see that our model fits really well for the training period
 # this makes sense, our model was fitted on 21 years of the data (the training data)
-# and then the model fits exactly right
-# for the subsequent years (2010+) our model somewhat underpredicts initially
+# and  since it has Period as a factor variable, the model fits period-time exactly right
+# However, the subsequent years (2010+) our model somewhat underpredicts initially
 # but it does understand that a decline is happening despite an initial trend upwards
 # note that the curve we see here is rather tricky: most trends will not look like this
 # empirically speaking. So I think we model does decently.
