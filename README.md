@@ -445,8 +445,9 @@ a declining trend into the data. Despite this, our best model
 understands that a decline is happening despite an initial trend
 upwards. So this is actually a surprisingly good fit.
 
-Note that the curve we see here is rather tricky: most trends will not
-look like this empirically speaking. So I think we model does decently.
+Note that the curve we see here is rather treacherous: most trends will
+not look like this empirically speaking. So I think we model does
+decently.
 
 Note that if a noperiod was chosen that was less than the total training
 data, then the data from calendartime -before- the training data can
@@ -603,9 +604,9 @@ prediction intervals. In that case, a gamma-poisson age-cohort-drift
 model might be better because then residuals on the period dimension
 will remain and will add to the variance. This variance can then be used
 to better estimate the gamma parameter. In a full age-period-cohort
-parameter, residuals on the period dimension will be modelled as
-structural period effects and thus absorbed by the period parameters. If
-those period parameters are actually structural, then that underlying
+model, residuals on the period dimension will be modelled as structural
+period effects and thus absorbed by the period parameters. If those
+period parameters are actually structural, then that underlying
 structure should either be modelled (but not as categorical dummies,
 because then you cannot extrapolate them) or they should be seen as
 variance so that our prediction interval widenes and includes them in
