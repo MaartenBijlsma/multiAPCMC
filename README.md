@@ -617,23 +617,3 @@ we believe that the parameters that were used to fit this model on the
 training data are also the best parameters for fitting to the full data.
 So we re-fit the APC model to the complete data using these parameters,
 and then forecast into the unknown future.
-
-When incidence counts are low to medium, I believe these are decent
-models. However, when counts (incidence, etc.) are high, I find that
-these types of models produce levels of uncertainty that are
-unrealistic. The truth might fall outside the confidence intervals or
-prediction intervals. In that case, a gamma-poisson age-cohort-drift
-model might be better because then residuals on the period dimension
-will remain and will add to the variance. This variance can then be used
-to better estimate the gamma parameter. In a full age-period-cohort
-model, residuals on the period dimension will be modelled as structural
-period effects and thus absorbed by the period parameters. If those
-period parameters are actually structural, then that underlying
-structure should either be modelled (but not as categorical dummies,
-because then you cannot extrapolate them) or they should be seen as
-variance so that our prediction interval wideness and includes them in
-possible futures. In other cases, for example when there is strong
-growth over time and we don’t want to use e.g. the cuttrend parameter,
-we see explosive incidence. This is also unrealistic. In these cases, it
-may also be worth looking into other types of forecasting methods such
-as Bayesian Structural Time Series.
