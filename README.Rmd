@@ -23,7 +23,7 @@ multiAPCMC is a package that allows the user to fit multiple age-period-cohort m
 
 Age-period-cohort (APC) models are models that seek to decompose outcomes into parts that are associated with time since birth (age), calendar time (period), and time of birth (cohort). This is [tricky business](https://maartenbijlsma.com/2017/11/25/a-hot-topic-and-a-futile-quest-the-recent-discussion-on-age-period-cohort-analysis-february-17-2014/) because age, period and cohort are linearly dependent; if exact age of a person is known at a particular point in time, that person's birth date can be calculated. This results in a 'linear dependency problem'; linear models cannot find a unique solution for this decomposition, and will either give an error or they will remove terms from the model by fiat. Nevertheless, APC scholars try to find solutions that result in 'meaningful' APC estimates. This is done by putting some constraint on the model. Whether this is actually possible to do in a meaningful way is up for debate. Personally, I remain skeptical of this idea, despite this topic being recurrent in my work for more than a decade now. See the commentaries in the [December 2013 issue of Demography](https://link.springer.com/journal/13524/volumes-and-issues/50-6?page=1) for a detailed discussion. However, this is only really relevant when we want to give a substantive interpretation to, for example, cohort trends. Do some birth cohorts have a higher risk of some outcome (e.g. lung cancer) because they performed some activity (e.g. smoking) during their lifetimes, relative to other birth cohorts (conditional on age and calendar time)? We do statistics for a variety of reasons; description, prediction, and causal explanation are the big three. Perhaps APC models are still useful for predicting future trends (forecasting)?
 
-APC models are indeed also used for forecasting. This is where the multiAPCMC package comes in. If some cohorts indeed have a higher risk of (e.g.) lung cancer, then this would be useful information to know when making age-specific forecasts of future cancer incidence. With this idea in mind  the [Nordpred software](https://www.kreftregisteret.no/en/Research/Projects/Nordpred/Nordpred-software/) (Moeller et al. 2003) was developed by the Cancer Registry (Kreftregisteret) of Norway. This package fits APC models where age, period, and cohort are entered into a generalized linear model as categorical variables, and a continuous time trend referred to as 'drift' is also determined. In order for the model to find a unique solution, a constraint has to be placed on the model. The Nordpred software automatically does this by setting a second reference category on the period and cohort dimensions. Specifically, it sets the coefficient of both the first and last period in the time series to be equal (i.e. have the same 'effect'), and the coefficient of the oldest and youngest birth cohort. However, this choice determines the drift parameter, and thereby it has a potentially strong effect on extrapolating the trend towards the future (forecasting).
+APC models are indeed also used for forecasting. This is where the multiAPCMC package comes in. If some cohorts indeed have a higher risk of (e.g.) lung cancer, then this would be useful information to know when making age-specific forecasts of future cancer incidence. With this idea in mind  the [Nordpred software](https://www.kreftregisteret.no/en/Research/Projects/Nordpred/Nordpred-software/) was developed by the Cancer Registry (Kreftregisteret) of Norway. This package fits APC models where age, period, and cohort are entered into a generalized linear model as categorical variables, and a continuous time trend referred to as 'drift' is also determined. In order for the model to find a unique solution, a constraint has to be placed on the model. The Nordpred software automatically does this by setting a second reference category on the period and cohort dimensions. Specifically, it sets the coefficient of both the first and last period in the time series to be equal (i.e. have the same 'effect'), and the coefficient of the oldest and youngest birth cohort. However, this choice determines the drift parameter, and thereby it has a potentially strong effect on extrapolating the trend towards the future (forecasting).
 
 In the multiAPCMC package, I allow the user to investigate other constraints as well. We could instead set the middle periods or middle cohorts to be equal (perhaps adjacent periods or cohorts are more similar...?), or the first and the middle, and so forth. Other choices that can be investigated are the link function (log link or power5 link) and the number of periods to use for forecasting. The multiAPCMC package also allows any data resolution, as long as they are in Lexis squares (1 year age by 1 year period, 2 year age by 2 year period, ... 5 year age by 5 year period, etc.).
 
@@ -72,7 +72,7 @@ head(multiAPCMC.example.data)
 unique(multiAPCMC.example.data$Age)
 unique(multiAPCMC.example.data$Period)
 ```
-Multiple classification models deal poorly with structural 0s. Snce incidences tend to be low for low ages, we could investigate at which age group we start having counts above 0. The code below shows that it is actually already really OK at young ages, since even at age 0 there are no 0s. But if there are, set startestage at some age category where you don't see that many 0s. For now, we will act as if that is age 29. Note that ages below 'startestage' are not thrown out. The package still uses information from those ages by taking the mean over period time for that age category. It just does not use it in the statistical model. Note also that we here set startestage to 30 because we have single year age groups and we start counting at 0, so age 0 is '1', age 1 is '2', and so forth. If we have 5-year age groups then 1 is age group '0 to 4', 2 is age group '5 to 9', and so forth.
+Multiple classification models deal poorly with structural 0s. Since incidences tend to be low for low ages, we could investigate at which age group we start having counts above 0. The code below shows that it is actually already really OK at young ages, since even at age 0 there are no 0s. But if there are, set startestage at some age category where you don't see that many 0s. For now, we will act as if that is age 29. Note that ages below 'startestage' are not thrown out. The package still uses information from those ages by taking the mean over period time for that age category. It just does not use it in the statistical model. Note also that we here set startestage to 30 because we have single year age groups and we start counting at 0, so age 0 is '1', age 1 is '2', and so forth. If we have 5-year age groups then 1 is age group '0 to 4', 2 is age group '5 to 9', and so forth.
 
 
 ```{r example03}
@@ -199,10 +199,22 @@ years <- sort(unique(alldat$Period))
 for(k in 1:length(years)) {
   inctot[k] <- sum(alldat$cases[alldat$Period==years[k]])
 }
-plot(years,inctot,type='l', lwd=2)
+plot(years[1:21],inctot[1:21],type='l', lwd=2,
+     xlim=c(1989,2020),
+     ylim=c(400,1800),
+     main='Fit on treacherous data')
+lines(years[21:32],inctot[21:32],lty=2, lwd=2)
 
 inctot.mod <- multiAPCMC.predsummary(years,rank1mod)
-lines(years,inctot.mod$pred, col='red', lwd=2)
+lines(years,inctot.mod$pred, col='red', lty=2,lwd=3)
+
+legend(1990,1700,
+       legend=c('observed data',
+                'unobserved future',
+                'model fit and forecast'),
+       lty=c(1,2,2),
+       lwd=2,
+       col=c('black','black','red'))
 ```
 
 We see that our model fits really well for the training period. This makes sense, our model was fitted on 21 years of the data (the training data), and  since it has Period as a factor variable, the model fits period-time exactly right.
@@ -215,7 +227,7 @@ Note that if a noperiod was chosen that was less than the total training data, t
 
 But this is a bit of an ugly plot! And it also doesn't include uncertainty in our estimates. Any self-respecting forecast should include uncertainty. After all, forecasting is an inherently probabilistic exercise.
 
-How do we get forecast uncertainty? Since I will need to aggregate over categories, and I cannot just sum lower bounds or sum upper bounds from the 'rank1mod' object. Instead, I need to get the original model first: for this, I use multiAPCMC.retrievemodel() again, but now with 'what' set to 'fit'instead of 'pred'. I save this in the 'fitrank1mod' object.
+How do we get forecast uncertainty? Since I will need to aggregate over categories, and I cannot just sum lower bounds or sum upper bounds from the 'rank1mod' object. Instead, I need to get the original model first: for this, I use multiAPCMC.retrievemodel() again, but now with 'what' set to 'fit' instead of 'pred'. I save this in the 'fitrank1mod' object.
 
 With this object, I can do a parametric bootstrap. This means I will create many predictions; each one will be a random draw from the so-called 'estimator distribution' of the model. This is very similar to taking draws from a posterior distribution in Bayesian estimation (see e.g. Gelman 'Regression and other stories') or McElreath ('Statistical Rethinking').
 
@@ -285,8 +297,8 @@ for(y in sort(unique(predtable$years))) {
   predtable$pred_550[predtable$years==y] <- qs[12]
 
 }
-predtable$obs <- inctot
-predtable <- predtable[predtable$years >= 2000,]
+predtable$obs <- c(inctot[1:21],rep(NA,length(22:32)))
+predtable$future <- c(rep(NA,length(1:21)),inctot[22:32])
 
 # we need ggplot for this
 library(ggplot2)
@@ -300,13 +312,22 @@ a <- prea - c(0,prea[-length(prea)])*0.75
 # plot with confidence levels
 p <- ggplot(predtable,aes(years))
 p +
-  geom_ribbon(aes(ymin=pred_025,ymax=pred_975), fill='darkorange2',alpha=a[1]) +
-  geom_ribbon(aes(ymin=pred_100,ymax=pred_900), fill='darkorange2',alpha=a[2]) +
-  geom_ribbon(aes(ymin=pred_200,ymax=pred_800), fill='darkorange2',alpha=a[3]) +
-  geom_ribbon(aes(ymin=pred_300,ymax=pred_700), fill='darkorange2',alpha=a[4]) +
-  geom_ribbon(aes(ymin=pred_400,ymax=pred_600), fill='darkorange2',alpha=a[5]) +
-  geom_ribbon(aes(ymin=pred_450,ymax=pred_550), fill='darkorange2',alpha=a[6]) +
-  geom_line(aes(y=obs),size=1.2)
+  geom_ribbon(aes(ymin=pred_025,ymax=pred_975, fill='confidence density'),alpha=a[1]) +
+  geom_ribbon(aes(ymin=pred_100,ymax=pred_900, fill='confidence density'), alpha=a[2]) +
+  geom_ribbon(aes(ymin=pred_200,ymax=pred_800, fill='confidence density'), alpha=a[3]) +
+  geom_ribbon(aes(ymin=pred_300,ymax=pred_700, fill='confidence density'), alpha=a[4]) +
+  geom_ribbon(aes(ymin=pred_400,ymax=pred_600, fill='confidence density'), alpha=a[5]) +
+  geom_ribbon(aes(ymin=pred_450,ymax=pred_550, fill='confidence density'), alpha=a[6]) +
+  geom_line(aes(y=obs,colour='observed data', linetype='observed data'),size=1.2) +
+  geom_line(aes(y=future,colour="unobserved future", linetype='unobserved future'),size=1.2) +
+  ggtitle("Fit on treacherous data") +
+  scale_color_manual(name = "data", values = c("observed data" = "black",
+                                                   "unobserved future" = "black")) +
+  scale_fill_manual(name='model', values = c("confidence density" = "darkorange2")) +
+  scale_linetype_manual(name='data',values=c("observed data" = "solid",
+                                             "unobserved future" = "dashed")) +
+  theme(legend.position = c(0.15, 0.8),
+        legend.background=element_blank())
 # using alpha allows for layered colours
 
 ```
@@ -318,7 +339,7 @@ Hence, our assumption could be either:
 - (1) we continue extrapolating this trend to the future that we don't have data on yet. after all, we started out believing that the future is best predicted by extrapolating the current trend. So we are very transparent in our assumptions.
 - (2), we believe that the parameters that were used to fit this model on the training data are also the best parameters for fitting to the full data. So we re-fit the APC model to the complete data using these parameters, and then forecast into the unknown future.
 
-When incidence counts are low to medium, I believe these are decent models. However, when counts (incidence, etc.) are high, I find that these types of models produce levels of uncertainty that are unrealistic. The truth might fall outside the confidence intervals or prediction intervals. In that case, a gamma-poisson age-cohort-drift model might be better because then residuals on the period dimension will remain and will add to the variance. This variance can then be used to better estimate the gamma parameter. In a full age-period-cohort model, residuals on the period dimension will be modelled as structural period effects and thus absorbed by the period parameters. If those period parameters are actually structural, then that underlying structure should either be modelled (but not as categorical dummies, because then you cannot extrapolate them) or they should be seen as variance so that our prediction interval widenes and includes them in possible futures. In other cases, for example when there is strong growth over time and we don't want to use e.g. the cuttrend parameter, we see explosive incidence. This is also unrealistic. In these cases, it may also be worth looking into other types of forecasting methods such as Bayesian Structural Time Series.
+When incidence counts are low to medium, I believe these are decent models. However, when counts (incidence, etc.) are high, I find that these types of models produce levels of uncertainty that are unrealistic. The truth might fall outside the confidence intervals or prediction intervals. In that case, a gamma-poisson age-cohort-drift model might be better because then residuals on the period dimension will remain and will add to the variance. This variance can then be used to better estimate the gamma parameter. In a full age-period-cohort model, residuals on the period dimension will be modelled as structural period effects and thus absorbed by the period parameters. If those period parameters are actually structural, then that underlying structure should either be modelled (but not as categorical dummies, because then you cannot extrapolate them) or they should be seen as variance so that our prediction interval wideness and includes them in possible futures. In other cases, for example when there is strong growth over time and we don't want to use e.g. the cuttrend parameter, we see explosive incidence. This is also unrealistic. In these cases, it may also be worth looking into other types of forecasting methods such as Bayesian Structural Time Series.
 
 
 

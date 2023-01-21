@@ -20,10 +20,10 @@
 #' multiAPCMC.example.data <- multiAPCMC.example.data
 #' multiAPCMC.multifit(multiAPCMC.example.data,
 #'                     startestage=5,
-#'                     vec.link=c('log','power5'),
+#'                     vec.link=c('log'),
 #'                     vec.noperiod=c(5,10),
 #'                     vec.refper=c('outer','center'),
-#'                     vec.refcoh=c('outer','center'),
+#'                     vec.refcoh=c('center'),
 #'                     nomodelmax=1024)
 #'
 multiAPCMC.multifit <- function(data,startestage,vec.link,vec.noperiod,vec.refper,vec.refcoh,nomodelmax=1024) {

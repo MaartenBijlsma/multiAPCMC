@@ -47,18 +47,17 @@ of (e.g.) lung cancer, then this would be useful information to know
 when making age-specific forecasts of future cancer incidence. With this
 idea in mind the [Nordpred
 software](https://www.kreftregisteret.no/en/Research/Projects/Nordpred/Nordpred-software/)
-(Moeller et al. 2003) was developed by the Cancer Registry
-(Kreftregisteret) of Norway. This package fits APC models where age,
-period, and cohort are entered into a generalized linear model as
-categorical variables, and a continuous time trend referred to as
-‘drift’ is also determined. In order for the model to find a unique
-solution, a constraint has to be placed on the model. The Nordpred
-software automatically does this by setting a second reference category
-on the period and cohort dimensions. Specifically, it sets the
-coefficient of both the first and last period in the time series to be
-equal (i.e. have the same ‘effect’), and the coefficient of the oldest
-and youngest birth cohort. However, this choice determines the drift
-parameter, and thereby it has a potentially strong effect on
+was developed by the Cancer Registry (Kreftregisteret) of Norway. This
+package fits APC models where age, period, and cohort are entered into a
+generalized linear model as categorical variables, and a continuous time
+trend referred to as ‘drift’ is also determined. In order for the model
+to find a unique solution, a constraint has to be placed on the model.
+The Nordpred software automatically does this by setting a second
+reference category on the period and cohort dimensions. Specifically, it
+sets the coefficient of both the first and last period in the time
+series to be equal (i.e. have the same ‘effect’), and the coefficient of
+the oldest and youngest birth cohort. However, this choice determines
+the drift parameter, and thereby it has a potentially strong effect on
 extrapolating the trend towards the future (forecasting).
 
 In the multiAPCMC package, I allow the user to investigate other
@@ -134,7 +133,7 @@ unique(multiAPCMC.example.data$Period)
 #> [16] 2004 2005 2006 2007 2008 2009
 ```
 
-Multiple classification models deal poorly with structural 0s. Snce
+Multiple classification models deal poorly with structural 0s. Since
 incidences tend to be low for low ages, we could investigate at which
 age group we start having counts above 0. The code below shows that it
 is actually already really OK at young ages, since even at age 0 there
@@ -425,10 +424,22 @@ years <- sort(unique(alldat$Period))
 for(k in 1:length(years)) {
   inctot[k] <- sum(alldat$cases[alldat$Period==years[k]])
 }
-plot(years,inctot,type='l', lwd=2)
+plot(years[1:21],inctot[1:21],type='l', lwd=2,
+     xlim=c(1989,2020),
+     ylim=c(400,1800),
+     main='Fit on treacherous data')
+lines(years[21:32],inctot[21:32],lty=2, lwd=2)
 
 inctot.mod <- multiAPCMC.predsummary(years,rank1mod)
-lines(years,inctot.mod$pred, col='red', lwd=2)
+lines(years,inctot.mod$pred, col='red', lty=2,lwd=3)
+
+legend(1990,1700,
+       legend=c('observed data',
+                'unobserved future',
+                'model fit and forecast'),
+       lty=c(1,2,2),
+       lwd=2,
+       col=c('black','black','red'))
 ```
 
 <img src="man/figures/README-example08-1.png" width="100%" />
@@ -462,7 +473,7 @@ How do we get forecast uncertainty? Since I will need to aggregate over
 categories, and I cannot just sum lower bounds or sum upper bounds from
 the ‘rank1mod’ object. Instead, I need to get the original model first:
 for this, I use multiAPCMC.retrievemodel() again, but now with ‘what’
-set to ‘fit’instead of ’pred’. I save this in the ‘fitrank1mod’ object.
+set to ‘fit’ instead of ‘pred’. I save this in the ‘fitrank1mod’ object.
 
 With this object, I can do a parametric bootstrap. This means I will
 create many predictions; each one will be a random draw from the
@@ -544,8 +555,8 @@ for(y in sort(unique(predtable$years))) {
   predtable$pred_550[predtable$years==y] <- qs[12]
 
 }
-predtable$obs <- inctot
-predtable <- predtable[predtable$years >= 2000,]
+predtable$obs <- c(inctot[1:21],rep(NA,length(22:32)))
+predtable$future <- c(rep(NA,length(1:21)),inctot[22:32])
 
 # we need ggplot for this
 library(ggplot2)
@@ -559,13 +570,24 @@ a <- prea - c(0,prea[-length(prea)])*0.75
 # plot with confidence levels
 p <- ggplot(predtable,aes(years))
 p +
-  geom_ribbon(aes(ymin=pred_025,ymax=pred_975), fill='darkorange2',alpha=a[1]) +
-  geom_ribbon(aes(ymin=pred_100,ymax=pred_900), fill='darkorange2',alpha=a[2]) +
-  geom_ribbon(aes(ymin=pred_200,ymax=pred_800), fill='darkorange2',alpha=a[3]) +
-  geom_ribbon(aes(ymin=pred_300,ymax=pred_700), fill='darkorange2',alpha=a[4]) +
-  geom_ribbon(aes(ymin=pred_400,ymax=pred_600), fill='darkorange2',alpha=a[5]) +
-  geom_ribbon(aes(ymin=pred_450,ymax=pred_550), fill='darkorange2',alpha=a[6]) +
-  geom_line(aes(y=obs),size=1.2)
+  geom_ribbon(aes(ymin=pred_025,ymax=pred_975, fill='confidence density'),alpha=a[1]) +
+  geom_ribbon(aes(ymin=pred_100,ymax=pred_900, fill='confidence density'), alpha=a[2]) +
+  geom_ribbon(aes(ymin=pred_200,ymax=pred_800, fill='confidence density'), alpha=a[3]) +
+  geom_ribbon(aes(ymin=pred_300,ymax=pred_700, fill='confidence density'), alpha=a[4]) +
+  geom_ribbon(aes(ymin=pred_400,ymax=pred_600, fill='confidence density'), alpha=a[5]) +
+  geom_ribbon(aes(ymin=pred_450,ymax=pred_550, fill='confidence density'), alpha=a[6]) +
+  geom_line(aes(y=obs,colour='observed data', linetype='observed data'),size=1.2) +
+  geom_line(aes(y=future,colour="unobserved future", linetype='unobserved future'),size=1.2) +
+  ggtitle("Fit on treacherous data") +
+  scale_color_manual(name = "data", values = c("observed data" = "black",
+                                                   "unobserved future" = "black")) +
+  scale_fill_manual(name='model', values = c("confidence density" = "darkorange2")) +
+  scale_linetype_manual(name='data',values=c("observed data" = "solid",
+                                             "unobserved future" = "dashed")) +
+  theme(legend.position = c(0.15, 0.8),
+        legend.background=element_blank())
+#> Warning: Removed 11 row(s) containing missing values (geom_path).
+#> Warning: Removed 21 row(s) containing missing values (geom_path).
 ```
 
 <img src="man/figures/README-example09-1.png" width="100%" />
@@ -609,7 +631,7 @@ period effects and thus absorbed by the period parameters. If those
 period parameters are actually structural, then that underlying
 structure should either be modelled (but not as categorical dummies,
 because then you cannot extrapolate them) or they should be seen as
-variance so that our prediction interval widenes and includes them in
+variance so that our prediction interval wideness and includes them in
 possible futures. In other cases, for example when there is strong
 growth over time and we don’t want to use e.g. the cuttrend parameter,
 we see explosive incidence. This is also unrealistic. In these cases, it

@@ -39,10 +39,10 @@ Fits multiple specifications of an APCMC model at once.
 multiAPCMC.example.data <- multiAPCMC.example.data
 multiAPCMC.multifit(multiAPCMC.example.data,
                     startestage=5,
-                    vec.link=c('log','power5'),
+                    vec.link=c('log'),
                     vec.noperiod=c(5,10),
                     vec.refper=c('outer','center'),
-                    vec.refcoh=c('outer','center'),
+                    vec.refcoh=c('center'),
                     nomodelmax=1024)
 
 }

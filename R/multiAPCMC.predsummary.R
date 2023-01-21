@@ -4,9 +4,9 @@
 #' @description summarizes the outcome by year within some age range (i.e. adds all incidences together); use this together with randpred to get confidence intervals for an age range (see documentation).
 #'
 #' @param years a vector of the years that you want to have summaries for
-#' @param modelpred the output of a retrievelmodel(multipred) or a randpred
+#' @param modelpred the output of a retrievemodel(multipred) or a randpred
 #' @param agemin the lower bound of the age categories that you want to summarize the outcome over
-#' @param agemax the upper bound o fthe age categories that you want to summarize the outcome over
+#' @param agemax the upper bound of the age categories that you want to summarize the outcome over
 #' @param poissondraw set to \code{TRUE} if you want to add a random draw from a Poisson distribution with lambda set to the summary value for that year (e.g. to build a prediction interval). \code{Default is FALSE}.
 #'
 #' @return returns a nested list with predictions from all of the models that were fitted with the \code{multiAPCMC.multifit.object}.

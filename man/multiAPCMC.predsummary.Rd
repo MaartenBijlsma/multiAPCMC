@@ -15,11 +15,11 @@ multiAPCMC.predsummary(
 \arguments{
 \item{years}{a vector of the years that you want to have summaries for}
 
-\item{modelpred}{the output of a retrievelmodel(multipred) or a randpred}
+\item{modelpred}{the output of a retrievemodel(multipred) or a randpred}
 
 \item{agemin}{the lower bound of the age categories that you want to summarize the outcome over}
 
-\item{agemax}{the upper bound o fthe age categories that you want to summarize the outcome over}
+\item{agemax}{the upper bound of the age categories that you want to summarize the outcome over}
 
 \item{poissondraw}{set to \code{TRUE} if you want to add a random draw from a Poisson distribution with lambda set to the summary value for that year (e.g. to build a prediction interval). \code{Default is FALSE}.}
 }

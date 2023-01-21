@@ -211,13 +211,25 @@ years <- sort(unique(alldat$Period))
 for(k in 1:length(years)) {
   inctot[k] <- sum(alldat$cases[alldat$Period==years[k]])
 }
-plot(years,inctot,type='l', lwd=2)
+plot(years[1:21],inctot[1:21],type='l', lwd=2,
+     xlim=c(1989,2020),
+     ylim=c(400,1800),
+     main='Fit on treacherous data')
+lines(years[21:32],inctot[21:32],lty=2, lwd=2)
 
 # to get the same information from our best model's prediction, we can use
 # the function multiAPCMC.predsummary().
 # we just tell it which years we want a summary from, and which model
 inctot.mod <- multiAPCMC.predsummary(years,rank1mod)
-lines(years,inctot.mod$pred, col='red', lwd=2)
+lines(years,inctot.mod$pred, col='red', lty=2,lwd=3)
+
+legend(1990,1700,
+       legend=c('observed data',
+                'unobserved future',
+                'model fit and forecast'),
+       lty=c(1,2,2),
+       lwd=2,
+       col=c('black','black','red'))
 
 # We see that our model fits really well for the training period
 # this makes sense, our model was fitted on 21 years of the data (the training data)
@@ -321,7 +333,8 @@ for(y in sort(unique(predtable$years))) {
   predtable$pred_550[predtable$years==y] <- qs[12]
 
 }
-predtable$obs <- inctot
+predtable$obs <- c(inctot[1:21],rep(NA,length(22:32)))
+predtable$future <- c(rep(NA,length(1:21)),inctot[22:32])
 # predtable <- predtable[predtable$years >= 2000,]
 
 # we need ggplot for this
@@ -332,17 +345,32 @@ library(ggplot2)
 prea <- c(0.05,0.20,0.40,0.60,0.80,0.90)
 a <- prea - c(0,prea[-length(prea)])*0.75 # the  0.75 is an inverse amplification value; lower it for stronger colors
 
-# plot with confidence levels
+# using alpha allows for layered colours
+# AA=cumsum(a)
+# names(AA)<-c("a1","a2","a3","a4","a5","a6")
 p <- ggplot(predtable,aes(years))
 p +
-  geom_ribbon(aes(ymin=pred_025,ymax=pred_975), fill='darkorange2',alpha=a[1]) +
-  geom_ribbon(aes(ymin=pred_100,ymax=pred_900), fill='darkorange2',alpha=a[2]) +
-  geom_ribbon(aes(ymin=pred_200,ymax=pred_800), fill='darkorange2',alpha=a[3]) +
-  geom_ribbon(aes(ymin=pred_300,ymax=pred_700), fill='darkorange2',alpha=a[4]) +
-  geom_ribbon(aes(ymin=pred_400,ymax=pred_600), fill='darkorange2',alpha=a[5]) +
-  geom_ribbon(aes(ymin=pred_450,ymax=pred_550), fill='darkorange2',alpha=a[6]) +
-  geom_line(aes(y=obs),size=1.2)
-# using alpha allows for layered colours
+  geom_ribbon(aes(ymin=pred_025,ymax=pred_975, fill='confidence density'),alpha=a[1]) +
+  geom_ribbon(aes(ymin=pred_100,ymax=pred_900, fill='confidence density'), alpha=a[2]) +
+  geom_ribbon(aes(ymin=pred_200,ymax=pred_800, fill='confidence density'), alpha=a[3]) +
+  geom_ribbon(aes(ymin=pred_300,ymax=pred_700, fill='confidence density'), alpha=a[4]) +
+  geom_ribbon(aes(ymin=pred_400,ymax=pred_600, fill='confidence density'), alpha=a[5]) +
+  geom_ribbon(aes(ymin=pred_450,ymax=pred_550, fill='confidence density'), alpha=a[6]) +
+  geom_line(aes(y=obs,colour='observed data', linetype='observed data'),size=1.2) +
+  geom_line(aes(y=future,colour="unobserved future", linetype='unobserved future'),size=1.2) +
+  ggtitle("Fit on treacherous data") +
+  scale_color_manual(name = "data", values = c("observed data" = "black",
+                                                   "unobserved future" = "black")) +
+  scale_fill_manual(name='model', values = c("confidence density" = "darkorange2")) +
+  scale_linetype_manual(name='data',values=c("observed data" = "solid",
+                                             "unobserved future" = "dashed")) +
+  theme(legend.position = c(0.15, 0.8),
+        legend.background=element_blank())
+
+
+# something with discrete_alpha
+# https://ggplot2.tidyverse.org/reference/scale_alpha.html
+# if you want to say exact levels in the legend
 
 # there are various papers out there on why 'leave-future-out' validation might be a good idea
 # one reason is that it simply allows us to see how our model behaves compared to the truth
