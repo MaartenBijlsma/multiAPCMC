@@ -73,8 +73,8 @@ multiAPCMC.datashape <- function(data,noperiod=4,startestage=5,refper1st,refper2
   data$or.Per <- data$Period # store untransformed period
   agemode <- getmode(diff(data$Age))
   permode <- getmode(diff(data$Period[!(diff(data$Period)==0)]))
-  data$Age <- (data$Age - min(data$Age))/agemode +1
-  data$Period <- (data$Period - min(data$Period))/permode +1
+  data$acode <- (data$Age - min(data$Age))/agemode +1
+  data$pcode <- (data$Period - min(data$Period))/permode +1
   data$Cohort <- data$Period - data$Age # this is a sane cohort classification
 
   # ! this could be even more improved because why make everything into codes?
@@ -93,7 +93,7 @@ multiAPCMC.datashape <- function(data,noperiod=4,startestage=5,refper1st,refper2
   # so I will just make a quick second dataset where we do throw out the data
   # based on startestage and noperiod
   data2 <- data[data$Age>=startestage,]
-  data2 <- data2[data2$Period>(dnoperiods-noperiod),]
+  data2 <- data2[data2$pcode>(dnoperiods-noperiod),]
 
   # ! check if the refs of period and cohort are actually in the list of period and cohorts
   # if not, quit and outputinfo
@@ -137,7 +137,6 @@ multiAPCMC.datashape <- function(data,noperiod=4,startestage=5,refper1st,refper2
   data$CohortTrue <- data$Cohort
 
   # the ones we use in the model should be factors (except pcode, which is drift)
-  data$pcode <- data$Period
   data$Period <- as.factor(data$Period)
   data$Cohort <- as.factor(data$Cohort)
 

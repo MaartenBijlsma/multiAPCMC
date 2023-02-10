@@ -42,14 +42,17 @@ multiAPCMC.multifit <- function(data,startestage,vec.link,vec.noperiod,vec.refpe
   # which don't change even if we change the refs
   apcdata <- multiAPCMC.datashape(data,
                                 noperiod=length(unique(data$Period)),
-                                startestage=1,
-                                refper1st=1,
-                                refper2nd=2,
-                                refcoh1st=1,
-                                refcoh2nd=2)$apcdata
+                                startestage=0,
+                                refper1st=min(data$Period),
+                                refper2nd=max(data$Period),
+                                refcoh1st=min(data$Period-data$Age),
+                                refcoh2nd=max(data$Period-data$Age))$apcdata
+
   # practically, those refs should always work
   # but it is not very elegant
   # now I need to fill those nested lists with estimated models
+  agemode <- getmode(diff(apcdata$Age))
+  permode <- permode <- getmode(diff(as.numeric(as.character(apcdata$Period[!(diff(data$Period)==0)]))))
   totalperiod <- length(unique(apcdata$PeriodTrue))
   totalcohort <- length(unique(apcdata$CohortTrue[apcdata$Age >= startestage]))
   refper1st <- NULL
@@ -65,35 +68,35 @@ multiAPCMC.multifit <- function(data,startestage,vec.link,vec.noperiod,vec.refpe
           stop("The total number of periods used to perform estimation (noperiod) is set to be higher than the number of periods detected in the dataframe")
         }
         if(vec.refper[p]=='extremes') {
-          refper1st <- totalperiod - noperiod + 1
-          refper2nd <- totalperiod
+          refper1st <- max(apcdata$PeriodTrue)-noperiod*permode+permode
+          refper2nd <- max(apcdata$PeriodTrue)
         } else if(vec.refper[p]=='outer') {
-          pseq <- (totalperiod - noperiod + 1):totalperiod
+          pseq <- seq(from=max(apcdata$PeriodTrue)-noperiod*permode+permode,to=max(apcdata$PeriodTrue),by=permode)
           refs <- round(quantile(pseq,c(0.2,0.8)))
           refper1st <- refs[1]
           refper2nd <- refs[2]
         } else if(vec.refper[p]=='center') {
-          pseq <- (totalperiod - noperiod + 1):totalperiod
+          pseq <- seq(from=max(apcdata$PeriodTrue)-noperiod*permode+permode,to=max(apcdata$PeriodTrue),by=permode)
           refper1st <- floor(median(pseq))
-          refper2nd <- refper1st +1
+          refper2nd <- refper1st + permode
         } else if(vec.refper[p]=='first middle') {
-          pseq <- (totalperiod - noperiod + 1):totalperiod
-          refper1st <- totalperiod - noperiod + 1
+          pseq <- seq(from=max(apcdata$PeriodTrue)-noperiod*permode+permode,to=max(apcdata$PeriodTrue),by=permode)
+          refper1st <- max(apcdata$PeriodTrue)-noperiod*permode+permode
           refper2nd <- floor(median(pseq))
         } else if(vec.refper[p]=='middle last') {
-          pseq <- (totalperiod - noperiod + 1):totalperiod
+          pseq <- pseq <- seq(from=max(apcdata$PeriodTrue)-noperiod*permode+permode,to=max(apcdata$PeriodTrue),by=permode)
           refper1st <- floor(median(pseq))
-          refper2nd <- totalperiod
+          refper2nd <- max(apcdata$PeriodTrue)
         } else if(vec.refper[p]=='first second') {
-          refper1st <- totalperiod - noperiod + 1
-          refper2nd <- refper1st +1
+          refper1st <- max(apcdata$PeriodTrue)-noperiod*permode+permode
+          refper2nd <- refper1st + permode
         } else if(vec.refper[p]=='penultimate last') {
-          refper1st <- totalperiod-1
-          refper2nd <- refper1st+1
+          refper1st <- max(apcdata$PeriodTrue) - permode
+          refper2nd <- refper1st + permode
         } else {warning('refper not recognized')}
         for(c in 1:length(vec.refcoh)) {
           uniquecohorts <- sort(unique(apcdata$CohortTrue[apcdata$Age >= startestage &
-                                                            apcdata$PeriodTrue > totalperiod-noperiod]))
+                                                            apcdata$PeriodTrue > max(apcdata$PeriodTrue)-noperiod*permode]))
           if(vec.refcoh[c]=='extremes') {
             refcoh1st <- min(uniquecohorts)
             refcoh2nd <- max(uniquecohorts)

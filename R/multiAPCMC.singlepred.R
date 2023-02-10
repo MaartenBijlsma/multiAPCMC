@@ -65,8 +65,8 @@ multiAPCMC.singlepred <- function(multiAPCMC.singlefit.object,futuredata,noproj=
 
   # first we need to determine the number of age categories
   Age <- sort(unique(apcdata.fitted$Age))
-  # then we need to know how many periods ahead and what name those periods should have:
-  PeriodTrue <- max(apcdata$pcode)+1:noproj
+  # then we need to know how many periods ahead
+  PeriodTrue <- max(apcdata$or.Per)+(or.Per.is:noproj*or.Per.is)
   # then we need to determine how to attenuate those pcodes
   if(noproj > length(cuttrend)) {
     stop("cuttrend length is shorter than number of periods to project ahead")
@@ -109,19 +109,20 @@ multiAPCMC.singlepred <- function(multiAPCMC.singlefit.object,futuredata,noproj=
   # on top of the intercept)
   # so let's first set Period equal to last estimated Period
   # and then re-set the references, just like with Cohort
-  AP$Period <- as.factor(as.character(max(apcdata.fitted$pcode)))
+  AP$Period <- as.factor(as.character(max(as.numeric(as.character(apcdata.fitted$PeriodTrue)))))
   levels(AP$Period) <- c(levels(AP$Period),refper1st)
   AP$Period[AP$Period==refper2nd] <- refper1st # and set it to be equal to first ref if it is a ref
   # this also needs to happen for apcdata if we want to make predictions for those
   # since some periods did not have estimated parameters due to the noperiod parameter
-  apcdata$Period[apcdata$PeriodTrue <= (dnoperiods - noperiod)] <- refper1st
+  apcdata$Period[apcdata$pcode <= (dnoperiods - noperiod)] <- refper1st
   # and the same for Cohort
-  # Cohorts outside the range of fitted cohorts get set to recoh1st
+  # Cohorts outside the range of fitted cohorts get set to refcoh1st
   apcdata$Cohort[!apcdata$CohortTrue %in% unique(apcdata.fitted$CohortTrue)] <- refcoh1st
 
   # In order to join AP with apcdata I will remove or add some columns
   AP$periodfitted <- 0
   AP$cases <- NA
+  apcdata$acode <- NULL
   apcdata$or.Age <- NULL # will be recalculated at the end
   apcdata$or.Per <- NULL # will be recalculated at the end
   apcdata$observed <- 1
@@ -162,13 +163,14 @@ multiAPCMC.singlepred <- function(multiAPCMC.singlefit.object,futuredata,noproj=
 
   # first we have to make a dataset with the lower ages
   underages <- unique(apcdata$Age)[unique(apcdata$Age) < startestage]
-  PeriodTrue <- max(apcdata$pcode)+1:noproj
+  PeriodTrue <- max(as.numeric(as.character(apcdata$PeriodTrue)))+(or.Per.is:noproj*or.Per.is)
   APtrue_under <- data.frame(expand.grid(underages,PeriodTrue))
-  names(APtrue_under) <- c("Age","pcode")
+  names(APtrue_under) <- c("Age","PeriodTrue")
   # now I copy some irrelevant columns so that we can easily rbind later
-  APtrue_under$PeriodTrue <- APtrue_under$pcode
+  # APtrue_under$PeriodTrue <- APtrue_under$pcode
   APtrue_under$Cohort <- APtrue_under$CohortTrue <- APtrue_under$PeriodTrue - APtrue_under$Age
-  APtrue_under$Period <- APtrue_under$pcode
+  APtrue_under$Period <- APtrue_under$PeriodTrue
+  APtrue_under$pcode <- (APtrue_under$Period - min(APtrue_under$Period))/or.Per.is +1
   APtrue_under$cases <- NA
   APtrue_under$PY <- 1
   APtrue_under$observed <- 0
@@ -176,7 +178,7 @@ multiAPCMC.singlepred <- function(multiAPCMC.singlefit.object,futuredata,noproj=
 
   for(age in sort(unique(APtrue_under$Age))) {
     # For agegroups with little data, we use mean incidence for last two periods:
-    APtrue_under$rate[APtrue_under$Age==age] <- mean((apcdata$cases/apcdata$PY)[apcdata$Age==age & apcdata$PeriodTrue>=max(apcdata$PeriodTrue-1)])
+    APtrue_under$rate[APtrue_under$Age==age] <- mean((apcdata$cases/apcdata$PY)[apcdata$Age==age & apcdata$PeriodTrue>=max(as.numeric(as.character(apcdata$PeriodTrue))-or.Per.is)])
     APtrue_under$rate_low <- APtrue_under$rate_high <- APtrue_under$rate
     # we can safely assume 0 CI because we are not performing estimation here
     # even if we did assume so, this will have no relevant impact on the numbers
@@ -223,8 +225,8 @@ multiAPCMC.singlepred <- function(multiAPCMC.singlefit.object,futuredata,noproj=
   AP$pred_cases_high <- AP$rate_high * AP$PY
 
   ## reconstruct or.Age and or.Per
-  AP$or.Per <- or.Per.int+(AP$PeriodTrue-1)*or.Per.is
-  AP$or.Age <- or.Age.int+(AP$Age-1)*or.Age.is
+  AP$or.Per <- AP$PeriodTrue
+  AP$or.Age <- AP$Age
 
   # then let's get rid of the columns that we don't need
   # we really just need A and P, but we can also keep C, and of course Rate, PY and cases
