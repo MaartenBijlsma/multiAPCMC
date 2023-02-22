@@ -174,7 +174,7 @@ ranktable[382:392,]
 # so we have the multiAPCMC.retrievemodel() function
 # in this function, we can just enter the parameters of the best model from ranktable, i.e.:
 
-# there are two ways to do this. Manually:
+# there are two ways to do this. They use the 'retrievemodel' function:
 rank1mod <- multiAPCMC.retrievemodel(multiAPCMC.multipred.object=predlist,
                                      what="pred",
                                      link='log',
@@ -192,6 +192,8 @@ rank1mod <- multiAPCMC.retrievemodel(multiAPCMC.multipred.object=predlist,
                                      refper=rank1par[3],
                                      refcoh=rank1par[4])
 # either way, we now have the model predictions in rank1mod
+
+
 
 head(rank1mod)
 
@@ -259,6 +261,50 @@ fitrank1mod <- multiAPCMC.retrievemodel(fitlist,
                                         noperiod=rank1par[2],
                                         refper=rank1par[3],
                                         refcoh=rank1par[4])
+
+# I can also do this a different way. If I specifically want to keep the
+# same cohorts and periods as references
+
+# The other two use datashape and specifically say which cohorts we want
+# as the reference categories, and other parameters
+# then uses that datashape to do a single fit with mutliAPCMC.singlefit()
+# what reference categories did it have?
+ranktable$refper1st[1]
+ranktable$refper2nd[1]
+ranktable$refcoh1st[1]
+ranktable$refcoh2nd[1]
+
+rank1ds <- multiAPCMC.datashape(multiAPCMC.example.data,
+                                noperiod=21,
+                                startestage=startestage,
+                                refper1st="1989",
+                                refper2nd="1990",
+                                refcoh1st="1942",
+                                refcoh2nd="1979")
+fitrank1mod2 <- multiAPCMC.singlefit(rank1ds,link="power5")
+# this effectively re-fits the model. But since it is just 1 GLM model
+# it goes pretty fast.
+
+# and of course, I can also this using the ranktable object:
+
+# let's fit a single instance of that model
+rank1ds <- multiAPCMC.datashape(multiAPCMC.example.data,
+                                  noperiod=ranktable$noperiod[1],
+                                  startestage=startestage,
+                                  refper1st=ranktable$refper1st[1],
+                                  refper2nd=ranktable$refper2nd[1],
+                                  refcoh1st=ranktable$refcoh1st[1],
+                                  refcoh2nd=ranktable$refcoh2nd[1])
+fitrank1mod2 <- multiAPCMC.singlefit(rank1ds,link=ranktable$link[1])
+
+# the advantage of explicitly referring to the reference cohorts and periods
+# rather than to something like "extremes" or "outer" is that these references
+# do not change when the time series changes somewhat (e.g. when you add)
+# more years of data. This is handy for when you have a training and
+# validation set.
+
+
+
 # with this object, I can do a parametric bootstrap
 # this means I will create many predictions; each one will be a random draw
 # from the so-called 'estimator distribution' of the model.

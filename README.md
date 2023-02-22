@@ -291,55 +291,55 @@ ranktable <- multiAPCMC.ranktable(multiAPCMC.multifit.object=fitlist,
 
 # top 10 models
 ranktable[1:10,]
-#>     linkfunction noperiod   ref_period       ref_cohort   is.AIC oos.RMSE
-#> 47        power5       21 first second         extremes 4973.594 10.06673
-#> 383       power5       21 first second penultimate last 4973.594 10.10041
-#> 103       power5       21 first second            outer 4973.594 10.12313
-#> 159       power5       21 first second           center 4973.594 10.16307
-#> 271       power5       21 first second      middle last 4973.594 10.17529
-#> 215       power5       21 first second     first middle 4973.594 10.21666
-#> 384          log       21 first second penultimate last 4972.366 10.47037
-#> 272          log       21 first second      middle last 4972.366 10.50664
-#> 48           log       21 first second         extremes 4972.366 10.51214
-#> 200          log       21 first middle     first middle 4972.366 10.58938
-#>      oos.MAE     driftSE is.pcAIC
-#> 47  6.935561 0.009189754 236.8378
-#> 383 6.972091 0.027821230 236.8378
-#> 103 7.010530 0.009207170 236.8378
-#> 159 7.066605 0.016378968 236.8378
-#> 271 7.032294 0.009225716 236.8378
-#> 215 7.140847 0.009268184 236.8378
-#> 384 6.981997 0.207986718 236.7794
-#> 272 7.014819 0.082801164 236.7794
-#> 48  7.022835 0.082639430 236.7794
-#> 200 6.130001 0.020423009 236.7794
+#>       link noperiod   ref_period       ref_cohort refper1st refper2nd refcoh1st
+#> 271 power5       21 first second      middle last      1989      1990      1942
+#> 200    log       21 first middle     first middle      1989      1999      1905
+#> 47  power5       21 first second         extremes      1989      1990      1905
+#> 383 power5       21 first second penultimate last      1989      1990      1978
+#> 199 power5       21 first middle     first middle      1989      1999      1905
+#> 103 power5       21 first second            outer      1989      1990      1920
+#> 159 power5       21 first second           center      1989      1990      1942
+#> 144    log       21 first middle           center      1989      1999      1942
+#> 215 power5       21 first second     first middle      1989      1990      1905
+#> 143 power5       21 first middle           center      1989      1999      1942
+#>     refcoh2nd   is.AIC oos.RMSE  oos.MAE     driftSE is.pcAIC
+#> 271      1979 4871.718 10.63601 7.272608 0.009293222 231.9865
+#> 200      1942 4870.818 10.63904 6.083363 0.020449196 231.9437
+#> 47       1979 4871.718 10.69941 7.344174 0.009257565 231.9865
+#> 383      1979 4871.718 10.74020 7.393888 0.026462803 231.9865
+#> 199      1942 4871.718 10.74375 6.050796 0.002007164 231.9865
+#> 103      1964 4871.718 10.83663 7.504271 0.009276391 231.9865
+#> 159      1943 4871.718 10.88075 7.552100 0.016417565 231.9865
+#> 144      1943 4870.818 10.89248 6.242397 0.145593912 231.9437
+#> 215      1942 4871.718 10.95834 7.628858 0.009334571 231.9865
+#> 143      1943 4871.718 10.96371 6.178769 0.013592732 231.9865
 
 # bottom 10 models
 ranktable[382:392,]
-#>     linkfunction noperiod       ref_period   ref_cohort   is.AIC  oos.RMSE
-#> 287       power5       21         extremes first second 4973.594  57.88050
-#> 335       power5       21 penultimate last first second 4973.594  60.08507
-#> 295       power5       21            outer first second 4973.594  63.12696
-#> 319       power5       21      middle last first second 4973.594  66.85555
-#> 303       power5       21           center first second 4973.594  67.28408
-#> 312          log       21     first middle first second 4972.366 149.67118
-#> 288          log       21         extremes first second 4972.366 188.38806
-#> 336          log       21 penultimate last first second 4972.366 197.98628
-#> 296          log       21            outer first second 4972.366 218.83234
-#> 320          log       21      middle last first second 4972.366 237.20965
-#> 304          log       21           center first second 4972.366 245.36393
-#>      oos.MAE    driftSE is.pcAIC
-#> 287 18.50168 0.08070200 236.8378
-#> 335 19.45506 0.08088434 236.8378
-#> 295 20.78033 0.08071851 236.8378
-#> 319 22.40688 0.08071897 236.8378
-#> 303 22.59416 0.08100834 236.8378
-#> 312 30.33190 0.81908359 236.7794
-#> 288 38.46044 0.81917222 236.7794
-#> 336 40.46773 0.82044045 236.7794
-#> 296 44.79456 0.81929798 236.7794
-#> 320 48.57901 0.81930289 236.7794
-#> 304 50.24993 0.82182224 236.7794
+#>       link noperiod       ref_period   ref_cohort refper1st refper2nd refcoh1st
+#> 287 power5       21         extremes first second      1989      2009      1905
+#> 335 power5       21 penultimate last first second      2008      2009      1905
+#> 295 power5       21            outer first second      1993      2005      1905
+#> 319 power5       21      middle last first second      1999      2009      1905
+#> 303 power5       21           center first second      1999      2000      1905
+#> 312    log       21     first middle first second      1989      1999      1905
+#> 288    log       21         extremes first second      1989      2009      1905
+#> 336    log       21 penultimate last first second      2008      2009      1905
+#> 296    log       21            outer first second      1993      2005      1905
+#> 320    log       21      middle last first second      1999      2009      1905
+#> 304    log       21           center first second      1999      2000      1905
+#>     refcoh2nd   is.AIC  oos.RMSE  oos.MAE    driftSE is.pcAIC
+#> 287      1906 4871.718  56.48612 18.07523 0.08070446 231.9865
+#> 335      1906 4871.718  59.69235 19.44145 0.08089258 231.9865
+#> 295      1906 4871.718  61.62920 20.27118 0.08072123 231.9865
+#> 319      1906 4871.718  65.14817 21.77967 0.08072172 231.9865
+#> 303      1906 4871.718  66.41038 22.32152 0.08102011 231.9865
+#> 312      1906 4870.818 148.16090 29.80172 0.81909910 231.9437
+#> 288      1906 4870.818 185.93321 37.56023 0.81918867 231.9437
+#> 336      1906 4870.818 201.63499 40.76817 0.82050973 231.9437
+#> 296      1906 4870.818 216.02402 43.68581 0.81931624 231.9437
+#> 320      1906 4870.818 233.38559 47.18543 0.81932165 231.9437
+#> 304      1906 4870.818 247.64066 50.04088 0.82194520 231.9437
 ```
 
 In this case, the top 10 models are all quite close together, as they
@@ -387,12 +387,12 @@ rank1mod <- multiAPCMC.retrievemodel(multiAPCMC.multipred.object=predlist,
 
 head(rank1mod)
 #>   Age Cohort Period cases observed periodfitted        rate   rate_high
-#> 1   1      0      1     1        1            1 0.008403361 0.008403361
-#> 2   2     -1      1     1        1            1 0.010752688 0.010752688
-#> 3   3     -2      1     1        1            1 0.012987013 0.012987013
-#> 4   4     -3      1     2        1            1 0.025000000 0.025000000
-#> 5   5     -4      1     2        1            1 0.025641026 0.025641026
-#> 6   6     -5      1     3        1            1 0.028571429 0.028571429
+#> 1   0   1989   1989     1        1            1 0.008403361 0.008403361
+#> 2   1   1988   1989     1        1            1 0.010752688 0.010752688
+#> 3   2   1987   1989     1        1            1 0.012987013 0.012987013
+#> 4   3   1986   1989     2        1            1 0.025000000 0.025000000
+#> 5   4   1985   1989     2        1            1 0.025641026 0.025641026
+#> 6   5   1984   1989     3        1            1 0.028571429 0.028571429
 #>      rate_low  PY pred_cases pred_cases_low pred_cases_high or.Per or.Age
 #> 1 0.008403361 119          1              1               1   1989      0
 #> 2 0.010752688  93          1              1               1   1989      1
@@ -609,11 +609,51 @@ see which APC model creates the line that best fits the ‘current trend’
 in APCMC models because the period factors cause a near-perfect fit to
 the training data.
 
-Hence, our assumption could be either: - (1) we continue extrapolating
+Hence, our assumption could be either: \* (1) we continue extrapolating
 this trend to the future that we don’t have data on yet. after all, we
 started out believing that the future is best predicted by extrapolating
-the current trend. So we are very transparent in our assumptions. - (2),
-we believe that the parameters that were used to fit this model on the
-training data are also the best parameters for fitting to the full data.
-So we re-fit the APC model to the complete data using these parameters,
-and then forecast into the unknown future.
+the current trend. So we are very transparent in our assumptions. \*
+(2), we believe that the parameters that were used to fit this model on
+the training data are also the best parameters for fitting to the full
+data. So we re-fit the APC model to the complete data using these
+parameters, and then forecast into the unknown future.
+
+If we have a ‘training set’ and a ‘validation set’, what do we then do
+when we have decided what the best model parameters are? Do we then use
+the full set? One idea is a combination of (1) and (2). Namely, we could
+use the full dataset from (2), but we use the cohort and period
+references from (1). If we want to do this, we cannot use
+multiAPCMC.retrievemodel() because it refers to cohorts and periods by
+“extremes” or “middle”. However, what is “extreme” or what is “middle”
+will change when we add years to the dataset. Instead, we can use
+multiAPCMC.datashape() and multiAPCMC.singlefit. These functions allow
+us to refer to the exact cohort and period references. I show this
+below:
+
+``` final
+
+ranktable$refper1st[1]
+ranktable$refper2nd[1]
+ranktable$refcoh1st[1]
+ranktable$refcoh2nd[1]
+
+rank1ds <- multiAPCMC.datashape(alldat,
+                                noperiod=21,
+                                startestage=startestage,
+                                refper1st="1989",
+                                refper2nd="1990",
+                                refcoh1st="1942",
+                                refcoh2nd="1979")
+fitrank1mod2 <- multiAPCMC.singlefit(rank1ds,link="power5")
+
+# or, alternatively:
+
+rank1ds <- multiAPCMC.datashape(alldat,
+                                  noperiod=ranktable$noperiod[1],
+                                  startestage=startestage,
+                                  refper1st=ranktable$refper1st[1],
+                                  refper2nd=ranktable$refper2nd[1],
+                                  refcoh1st=ranktable$refcoh1st[1],
+                                  refcoh2nd=ranktable$refcoh2nd[1])
+fitrank1mod2 <- multiAPCMC.singlefit(rank1ds,link=ranktable$link[1])
+```
