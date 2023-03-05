@@ -609,14 +609,14 @@ see which APC model creates the line that best fits the ‘current trend’
 in APCMC models because the period factors cause a near-perfect fit to
 the training data.
 
-Hence, our assumption could be either: \* (1) we continue extrapolating
+Hence, our assumption could be either: (1) we continue extrapolating
 this trend to the future that we don’t have data on yet. after all, we
 started out believing that the future is best predicted by extrapolating
-the current trend. So we are very transparent in our assumptions. \*
-(2), we believe that the parameters that were used to fit this model on
-the training data are also the best parameters for fitting to the full
-data. So we re-fit the APC model to the complete data using these
-parameters, and then forecast into the unknown future.
+the current trend. So we are very transparent in our assumptions. (2),
+we believe that the parameters that were used to fit this model on the
+training data are also the best parameters for fitting to the full data.
+So we re-fit the APC model to the complete data using these parameters,
+and then forecast into the unknown future.
 
 If we have a ‘training set’ and a ‘validation set’, what do we then do
 when we have decided what the best model parameters are? Do we then use
@@ -632,10 +632,10 @@ below:
 
 ``` final
 
-ranktable$refper1st[1]
-ranktable$refper2nd[1]
-ranktable$refcoh1st[1]
-ranktable$refcoh2nd[1]
+print(ranktable$refper1st[1])
+print(ranktable$refper2nd[1])
+print(ranktable$refcoh1st[1])
+print(ranktable$refcoh2nd[1])
 
 rank1ds <- multiAPCMC.datashape(alldat,
                                 noperiod=21,

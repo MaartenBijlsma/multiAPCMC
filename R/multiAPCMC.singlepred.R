@@ -128,6 +128,20 @@ multiAPCMC.singlepred <- function(multiAPCMC.singlefit.object,futuredata,noproj=
   apcdata$observed <- 1
   AP$PY <- 1 # will be assigned proper value later
   AP$observed <- 0
+
+  # check if apcdata and AP can actually be joined
+  namesAP <- names(AP)
+  namesapcdata <- names(apcdata)
+  intersectnames <- intersect(namesAP,namesapcdata)
+  approvednames <- c("Age","pcode","PeriodTrue","CohortTrue","Cohort","Period",
+                     "periodfitted","cases","PY","observed")
+  if(!all(intersectnames %in% intersect(approvednames,intersectnames))) {
+    stop("Vital column is missing in the inputparameters: vital columns are the following: Age,pcode,PeriodTrue,
+  CohortTrue,Cohort,Period,periodfitted,cases,PY,observed)")
+  }
+  removenames <- namesapcdata[!namesapcdata %in% approvednames]
+  apcdata[removenames] <- NULL
+
   AP <- rbind(apcdata,AP)
   AP$includepred <- ifelse(AP$Age < startestage,0,1)
 
